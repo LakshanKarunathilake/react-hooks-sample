@@ -15,16 +15,24 @@ const Character = props => {
   //   );
   // }
 
+  // componentDidUpdate(prevProps) {
+  //   console.log('Component did update');
+  //   if (prevProps.selectedChar !== this.props.selectedChar) {
+  //     this.fetchData();
+  //   }
+  // }
+
   useEffect(() => {
     fetchData();
-  }, [props.selectedChar]);
+  }, []);
 
   const fetchData = () => {
     console.log(
-      "Sending Http request for new character with id " + props.selectedChar
+      "Sending Http request for new character with id " +
+        this.props.selectedChar
     );
     setIsLoading(true);
-    fetch("https://swapi.co/api/people/" + props.selectedChar)
+    fetch("https://swapi.co/api/people/" + this.props.selectedChar)
       .then(response => {
         if (!response.ok) {
           throw new Error("Could not fetch person!");
@@ -33,7 +41,7 @@ const Character = props => {
       })
       .then(charData => {
         const loadedCharacter = {
-          id: props.selectedChar,
+          id: this.props.selectedChar,
           name: charData.name,
           height: charData.height,
           colors: {
@@ -43,7 +51,7 @@ const Character = props => {
           gender: charData.gender,
           movieCount: charData.films.length
         };
-        setIsLoading(false);
+        isLoading(false);
         setCharacters(loadedCharacter);
       })
       .catch(err => {
