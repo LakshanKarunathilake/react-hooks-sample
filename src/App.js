@@ -4,30 +4,30 @@ import CharPicker from "./components/CharPicker";
 import Character from "./components/Character";
 
 const App = props => {
-  cosnt[(state, setState)] = useState({
+  const [state, setState] = useState({
     selectedCharacter: 1,
     side: "light",
     destroyed: false
   });
 
   const sideHandler = side => {
-    setState({ side: side });
+    setState({ ...state, side: side });
   };
 
   const charSelectHandler = event => {
     const charId = event.target.value;
-    setState({ selectedCharacter: charId });
+    setState({ ...state, selectedCharacter: charId });
   };
 
   const destructionHandler = () => {
-    setState({ destroyed: true });
+    setState({ ...state, destroyed: true });
   };
 
   let content = (
     <React.Fragment>
       <CharPicker
         side={state.side}
-        selectedChar={selectedCharacter}
+        selectedChar={state.selectedCharacter}
         onCharSelect={charSelectHandler}
       />
       <Character selectedChar={state.selectedCharacter} />
