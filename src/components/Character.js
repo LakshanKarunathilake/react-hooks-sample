@@ -1,85 +1,47 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import Summary from "./Summary";
+import { useHttp } from "../hooks/http";
 
 const Character = props => {
-  const [characters, setCharacters] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, fetchedData] = useHttp(
+    "https://swapi.co/api/people/" + props.selectedChar,
+    [props.selectedChar]
+  );
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log('shouldComponentUpdate');
-  //   return (
-  //     nextProps.selectedChar !== this.props.selectedChar ||
-  //     nextState.loadedCharacter.id !== loadedCharacter.id ||
-  //     nextState.isLoading !== isLoading
-  //   );
-  // }
+  let loadedCharacter = null;
 
-  // componentDidUpdate(prevProps) {
-  //   console.log('Component did update');
-  //   if (prevProps.selectedChar !== this.props.selectedChar) {
-  //     this.fetchData();
-  //   }
-  // }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    console.log(
-      "Sending Http request for new character with id " +
-        this.props.selectedChar
-    );
-    setIsLoading(true);
-    fetch("https://swapi.co/api/people/" + this.props.selectedChar)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Could not fetch person!");
-        }
-        return response.json();
-      })
-      .then(charData => {
-        const loadedCharacter = {
-          id: this.props.selectedChar,
-          name: charData.name,
-          height: charData.height,
-          colors: {
-            hair: charData.hair_color,
-            skin: charData.skin_color
-          },
-          gender: charData.gender,
-          movieCount: charData.films.length
-        };
-        isLoading(false);
-        setCharacters(loadedCharacter);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
-  // componentWillUnmount() {
-  //   console.log('Too soon...');
-  // }
+  if (fetchedData) {
+    loadedCharacter = {
+      id: props.selectedChar,
+      name: fetchedData.name,
+      height: fetchedData.height,
+      colors: {
+        hair: fetchedData.hair_color,
+        skin: fetchedData.skin_color
+      },
+      gender: fetchedData.gender,
+      movieCount: fetchedData.films.length
+    };
+  }
 
   let content = <p>Loading Character...</p>;
 
-  if (!isLoading && characters.id) {
+  if (!isLoading && loadedCharacter) {
     content = (
       <Summary
-        name={characters.name}
-        gender={characters.gender}
-        height={characters.height}
-        hairColor={characters.colors.hair}
-        skinColor={characters.colors.skin}
-        movieCount={characters.movieCount}
+        name={loadedCharacter.name}
+        gender={loadedCharacter.gender}
+        height={loadedCharacter.height}
+        hairColor={loadedCharacter.colors.hair}
+        skinColor={loadedCharacter.colors.skin}
+        movieCount={loadedCharacter.movieCount}
       />
     );
-  } else if (!isLoading && !characters.id) {
+  } else if (!isLoading && !loadedCharacter) {
     content = <p>Failed to fetch character.</p>;
   }
   return content;
 };
 
-export default Character;
+export default React.memo(Character);
